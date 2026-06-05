@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'remember_token',
+        'role',
     ];
 
     /**
@@ -51,5 +52,13 @@ class User extends Authenticatable
     public function borrowings()
     {
         return $this->hasMany(Borrowing::class, 'member_id');
+    }
+
+    /**
+     * Get the user's full name.
+     */
+    public function getFullNameAttribute()
+    {
+        return $this->name;
     }
 }

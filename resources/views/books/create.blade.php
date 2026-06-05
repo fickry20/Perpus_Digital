@@ -1,26 +1,29 @@
 @extends('layouts.app')
 
-@section('title', 'Add New Book')
+@section('title', 'Tambah Buku Baru')
 
-@section('page-title', 'Add New Book')
+@section('page-title', 'Tambah Buku Baru')
 
 @section('page-actions')
-<a href="{{ route('books.index') }}" class="btn btn-sm btn-secondary">
-    <i class="fas fa-arrow-left me-1"></i> Back to Books
+<a href="{{ route('books.index') }}" class="btn btn-secondary d-flex align-items-center gap-2">
+    <i class="fas fa-arrow-left"></i> Kembali ke Daftar Buku
 </a>
 @endsection
 
 @section('content')
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <div class="card shadow">
-            <div class="card-body">
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h5 class="fw-bold text-slate-800 mb-0"><i class="fas fa-plus-circle me-2 text-primary"></i>Formulir Tambah Buku</h5>
+            </div>
+            <div class="card-body p-4">
                 <form action="{{ route('books.store') }}" method="POST">
                     @csrf
 
-                    <div class="mb-3">
-                        <label for="isbn" class="form-label">ISBN</label>
-                        <input type="text" class="form-control @error('isbn') is-invalid @enderror" id="isbn" name="isbn" value="{{ old('isbn') }}">
+                    <div class="mb-4">
+                        <label for="isbn" class="form-label fw-semibold text-slate-700">Nomor ISBN</label>
+                        <input type="text" class="form-control @error('isbn') is-invalid @enderror" id="isbn" name="isbn" value="{{ old('isbn') }}" placeholder="Contoh: 978-602-03-3160-7">
                         @error('isbn')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -28,9 +31,9 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required>
+                    <div class="mb-4">
+                        <label for="title" class="form-label fw-semibold text-slate-700">Judul Buku <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" placeholder="Masukkan judul lengkap buku..." required>
                         @error('title')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -38,9 +41,9 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label for="author" class="form-label">Author</label>
-                        <input type="text" class="form-control @error('author') is-invalid @enderror" id="author" name="author" value="{{ old('author') }}">
+                    <div class="mb-4">
+                        <label for="author" class="form-label fw-semibold text-slate-700">Nama Penulis</label>
+                        <input type="text" class="form-control @error('author') is-invalid @enderror" id="author" name="author" value="{{ old('author') }}" placeholder="Contoh: Tere Liye">
                         @error('author')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -50,9 +53,9 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="year_published" class="form-label">Year Published</label>
-                                <input type="number" class="form-control @error('year_published') is-invalid @enderror" id="year_published" name="year_published" value="{{ old('year_published') }}" min="1000" max="{{ date('Y') }}">
+                            <div class="mb-4">
+                                <label for="year_published" class="form-label fw-semibold text-slate-700">Tahun Terbit</label>
+                                <input type="number" class="form-control @error('year_published') is-invalid @enderror" id="year_published" name="year_published" value="{{ old('year_published') }}" min="1000" max="{{ date('Y') }}" placeholder="Contoh: 2023">
                                 @error('year_published')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -61,8 +64,8 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="quantity_available" class="form-label">Quantity Available <span class="text-danger">*</span></label>
+                            <div class="mb-4">
+                                <label for="quantity_available" class="form-label fw-semibold text-slate-700">Jumlah Buku Tersedia <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control @error('quantity_available') is-invalid @enderror" id="quantity_available" name="quantity_available" value="{{ old('quantity_available', 1) }}" min="0" required>
                                 @error('quantity_available')
                                 <div class="invalid-feedback">
@@ -73,10 +76,10 @@
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{{ route('books.index') }}" class="btn btn-secondary me-md-2">Cancel</a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> Save Book
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                        <a href="{{ route('books.index') }}" class="btn btn-light border">Batal</a>
+                        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                            <i class="fas fa-save"></i> Simpan Buku
                         </button>
                     </div>
                 </form>

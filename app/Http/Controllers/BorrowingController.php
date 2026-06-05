@@ -64,7 +64,7 @@ class BorrowingController extends Controller
     public function create(Book $book)
 {
     // Cek jika buku tersedia
-    if ($book->available_copies <= 0) {
+    if ($book->quantity_available <= 0) {
         return redirect()->route('books.index')->with('error', 'This book is currently unavailable.');
     }
 
@@ -79,14 +79,14 @@ class BorrowingController extends Controller
 {
     // Validasi input untuk memastikan book_id valid
     $validated = $request->validate([
-        'book_id' => 'required|exists:books,book_id',
+        'book_id' => 'required|exists:books,id',
     ]);
 
     // Ambil buku berdasarkan book_id yang terpilih
     $book = Book::findOrFail($validated['book_id']);
 
     // Cek apakah buku tersedia
-    if ($book->available_copies < 1) {
+    if ($book->quantity_available < 1) {
         return redirect()->back()->with('error', 'Book is not available.');
     }
 
@@ -96,7 +96,7 @@ class BorrowingController extends Controller
     try {
         // Simpan data peminjaman buku
         Borrowing::create([
-            'book_id' => $book->book_id,
+            'book_id' => $book->id,
             'member_id' => Auth::id(),
             'borrow_date' => Carbon::now(),
             'due_date' => Carbon::now()->addDays(7), // Peminjaman 7 hari
@@ -105,7 +105,7 @@ class BorrowingController extends Controller
 
         // Kurangi jumlah buku yang tersedia
         $book->update([
-            'available_copies' => $book->available_copies - 1
+            'quantity_available' => $book->quantity_available - 1
         ]);
 
         // Commit transaksi
@@ -188,11 +188,43 @@ class BorrowingController extends Controller
         $book = Book::find($borrowing->book_id);
         if ($book) {
             $book->update([
-                'available_copies' => $book->available_copies + 1
+                'quantity_available' => $book->quantity_available + 1
             ]);
         }
         
         return redirect()->route('borrowings.index')
             ->with('success', 'Book returned successfully.');
+    }
+
+    /**
+     * Display the borrowing history of the authenticated member.
+     */
+    public function history(Request $request)
+    {
+        $query = Borrowing::with('book')
+            ->where('member_id', Auth::id());
+
+        // Filter by status if provided
+        if ($request->filled('status') && in_array($request->status, ['borrowed', 'returned'])) {
+            $query->where('status', $request->status);
+        }
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('book', function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('author', 'like', "%{$search}%")
+                  ->orWhere('isbn', 'like', "%{$search}%");
+            });
+        }
+
+        // Order by most recent borrowings first
+        $query->orderBy('borrow_date', 'desc');
+
+        // Paginate results
+        $borrowings = $query->paginate(10);
+
+        return view('borrowings.history', compact('borrowings'));
     }
 }

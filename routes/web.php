@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BorrowingController;
+use App\Http\Controllers\MemberController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,11 @@ Route::middleware('auth')->group(function () {
     // Books routes
     Route::resource('books', BookController::class);
     
+    // Members routes (Admin only but handled inside controller or via middleware if preferred, let's keep it clean in route)
+    Route::resource('members', MemberController::class)->only(['index']);
+    
     // Borrowings routes
+    Route::get('/borrowings/history', [BorrowingController::class, 'history'])->name('borrowings.history');
     Route::get('/borrowings/confirm/{book}', [BorrowingController::class, 'create'])->name('borrowings.create');
     Route::get('/borrowings', [BorrowingController::class, 'index'])->name('borrowings.index');
     Route::get('/borrowings/{borrowing}/edit', [BorrowingController::class, 'edit'])->name('borrowings.edit');
